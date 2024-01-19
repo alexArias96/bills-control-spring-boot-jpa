@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title th:text="${title}"></title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+	<h1 th:text="${title}"></h1>
+	<a th:href="@{/form}">Create Cliente</a>
+	<table>
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Name</th>
+				<th>Last Name</th>
+				<th>Email</th>
+				<th>Date</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="client: ${clients}">
+				<td th:text="${client.id}"></td>
+				<td th:text="${client.name}"></td>
+				<td th:text="${client.surname}"></td>
+				<td th:text="${client.email}"></td>
+				<td th:text="${client.createAt}"></td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

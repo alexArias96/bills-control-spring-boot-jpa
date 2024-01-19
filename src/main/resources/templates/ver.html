@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${titulo}">Insert title here</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container py-4">
+    <div class="card bg-light">
+        <div class="card-header" th:text="${titulo}"></div>
+        <div class="card-body">
+            <img th:if="${#strings.length(cliente.photo) > 0}" class="img-thumbnail rounded float-left"
+                 style="max-width: 25%;"
+                 th:src="@{'/upload/' + ${cliente.photo}}"
+                 th:alt="${cliente.photo}"/>
+
+            <ul class="list-group">
+                <li class="list-group-item" th:text="${cliente.nombre}"></li>
+                <li class="list-group-item" th:text="${cliente.apellido}"></li>
+                <li class="list-group-item" th:text="${cliente.email}"></li>
+                <li class="list-group-item" th:text="${cliente.createAt}"></li>
+            </ul>
+            <table class="table table-bordered table-striped my-4">
+                <thead>
+                    <tr>
+                        <th>Invoice</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="bill: ${cliente.bills}">
+                        <td th:text="${bill.id}"></td>
+                        <td th:text="${bill.description}"></td>
+                        <td th:text="${bill.createAt}"></td>
+                        <td th:text="${bill.total}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
