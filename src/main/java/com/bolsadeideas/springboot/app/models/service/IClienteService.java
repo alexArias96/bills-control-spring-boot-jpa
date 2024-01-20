@@ -1,15 +1,15 @@
 package com.bolsadeideas.springboot.app.models.service;
 
-import com.bolsadeideas.springboot.app.models.entity.Cliente;
+import com.bolsadeideas.springboot.app.models.entity.Client;
 
 import java.util.List;
 
 public interface IClienteService {
-    public List<Cliente> findAll();
+    public List<Client> findAll();
 
-    public void save(Cliente cliente);
+    public void save(Client client);
 
-    public Cliente findOne(Long id);
+    public Client findOne(Long id);
 
     public void delete(Long id);
 }

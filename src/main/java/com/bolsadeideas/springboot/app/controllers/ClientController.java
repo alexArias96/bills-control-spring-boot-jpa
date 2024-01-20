@@ -2,6 +2,8 @@ package com.bolsadeideas.springboot.app.controllers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
+
+import com.bolsadeideas.springboot.app.models.entity.Client;
 import com.bolsadeideas.springboot.app.models.service.IUploadsFileService;
 import org.springframework.core.io.Resource;
 import javax.validation.Valid;
@@ -13,13 +15,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import com.bolsadeideas.springboot.app.models.entity.Cliente;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @SessionAttributes("cliente")
-public class ClienteController {
+public class ClientController {
 
     @Autowired
     private IClienteService iClienteService;
@@ -41,14 +42,14 @@ public class ClienteController {
     @GetMapping("/ver/{id}")
     public String ver(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
 
-        Cliente cliente = iClienteService.findOne(id);
-        if (cliente == null) {
+        Client client = iClienteService.findOne(id);
+        if (client == null) {
             flash.addFlashAttribute("error", "el cliente no exite en la base de datos");
             return "redirect:/listar";
         }
 
-        model.put("cliente", cliente);
-        model.put("titulo", "Detalle cliente: " + cliente.getNombre());
+        model.put("cliente", client);
+        model.put("titulo", "Detalle cliente: " + client.getName());
 
         return "ver";
     }
@@ -63,8 +64,8 @@ public class ClienteController {
     @RequestMapping(value = "/form")
     public String crear(Map<String, Object> model) {
 
-        Cliente cliente = new Cliente();
-        model.put("cliente", cliente);
+        Client client = new Client();
+        model.put("cliente", client);
         model.put("titulo", "Formulario de Cliente");
         return "form";
     }
@@ -72,20 +73,20 @@ public class ClienteController {
     @RequestMapping(value = "/form/{id}")
     public String editar(@PathVariable(value = "id") Long id, Map<String, Object> model) {
 
-        Cliente cliente = null;
+        Client client = null;
 
         if (id > 0) {
-            cliente = iClienteService.findOne(id);
+            client = iClienteService.findOne(id);
         } else {
             return "redirect:/listar";
         }
-        model.put("cliente", cliente);
+        model.put("cliente", client);
         model.put("titulo", "Editar Cliente");
         return "form";
     }
 
     @RequestMapping(value = "/form", method = RequestMethod.POST)
-    public String guardar(@Valid Cliente cliente, BindingResult result, Model model, @RequestParam("file") MultipartFile photo, RedirectAttributes flash) throws IOException {
+    public String guardar(@Valid Client client, BindingResult result, Model model, @RequestParam("file") MultipartFile photo, RedirectAttributes flash) throws IOException {
         if (result.hasErrors()) {
             model.addAttribute("titulo", "Formulario de Cliente");
             return "form";
@@ -93,22 +94,22 @@ public class ClienteController {
 
         if (!photo.isEmpty()) {
 
-            if (cliente.getId() != null
-                    && cliente.getId() > 0
-                    && cliente.getPhoto() != null
-                    && !cliente.getPhoto().isEmpty()) {
+            if (client.getId() != null
+                    && client.getId() > 0
+                    && client.getPhoto() != null
+                    && !client.getPhoto().isEmpty()) {
 
-                uploadsFileService.delete(cliente.getPhoto()); //because that´s how you get file name
+                uploadsFileService.delete(client.getPhoto()); //because that´s how you get file name
             }
 
             String uniqueFileName = uploadsFileService.copy(photo);
 
             flash.addFlashAttribute("info", "Has subido correctamente '" + uniqueFileName + "'");
 
-            cliente.setPhoto(uniqueFileName);
+            client.setPhoto(uniqueFileName);
         }
 
-        iClienteService.save(cliente);
+        iClienteService.save(client);
         return "redirect:listar";
     }
 
@@ -116,13 +117,13 @@ public class ClienteController {
     public String eliminar(@PathVariable(value = "id") Long id, RedirectAttributes flash) {
 
         if (id > 0) {
-            Cliente cliente = iClienteService.findOne(id);
+            Client client = iClienteService.findOne(id);
             iClienteService.delete(id);
 
             flash.addFlashAttribute("success", "Cliente eliminado con exito!");
 
-            if (uploadsFileService.delete(cliente.getPhoto())) {
-                flash.addFlashAttribute("photo", "Photo: " + cliente.getPhoto() + " eliminado con exito");
+            if (uploadsFileService.delete(client.getPhoto())) {
+                flash.addFlashAttribute("photo", "Photo: " + client.getPhoto() + " eliminado con exito");
             }
 
         }

@@ -19,7 +19,7 @@ public class Bill implements Serializable {
     private Date createAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Cliente cliente;
+    private Client client;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "bill_id")
@@ -66,12 +66,12 @@ public class Bill implements Serializable {
         this.createAt = createAt;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public Client getCliente() {
+        return client;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setCliente(Client client) {
+        this.client = client;
     }
 
     public List<ItemBill> getItems() {

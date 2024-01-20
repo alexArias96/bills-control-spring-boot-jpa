@@ -1,7 +1,7 @@
 package com.bolsadeideas.springboot.app.models.service;
 
-import com.bolsadeideas.springboot.app.models.dao.IClienteDao;
-import com.bolsadeideas.springboot.app.models.entity.Cliente;
+import com.bolsadeideas.springboot.app.models.dao.IClientDao;
+import com.bolsadeideas.springboot.app.models.entity.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,23 +12,23 @@ import java.util.List;
 public class ClienteServiceImpl implements IClienteService{
 
     @Autowired
-    private IClienteDao clienteDao;
+    private IClientDao clienteDao;
 
     @Override
     @Transactional(readOnly = true)
-    public List<Cliente> findAll() {
+    public List<Client> findAll() {
         return clienteDao.findAll();
     }
 
     @Override
     @Transactional
-    public void save(Cliente cliente) {
-        clienteDao.save(cliente);
+    public void save(Client client) {
+        clienteDao.save(client);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Cliente findOne(Long id) {
+    public Client findOne(Long id) {
         return clienteDao.findOne(id);
     }
 
