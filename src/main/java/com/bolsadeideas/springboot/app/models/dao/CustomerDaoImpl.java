@@ -5,32 +5,32 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import com.bolsadeideas.springboot.app.models.entity.Client;
+import com.bolsadeideas.springboot.app.models.entity.Customer;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ClientDaoImpl implements IClientDao {
+public class CustomerDaoImpl implements ICustomerDao {
 
 	@PersistenceContext
 	private EntityManager em;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Client> findAll() {
-		return em.createQuery("from Client").getResultList();
+	public List<Customer> findAll() {
+		return em.createQuery("from Customer").getResultList();
 	}
 
 	@Override
-	public Client findOne(Long id) {
-		return em.find(Client.class, id);
+	public Customer findOne(Long id) {
+		return em.find(Customer.class, id);
 	}
 
 	@Override
-	public void save(Client client) {
-		if (client.getId() != null && client.getId() > 0) {
-			em.merge(client);
+	public void save(Customer customer) {
+		if (customer.getId() != null && customer.getId() > 0) {
+			em.merge(customer);
 		} else {
-			em.persist(client);
+			em.persist(customer);
 		}
 	}
 

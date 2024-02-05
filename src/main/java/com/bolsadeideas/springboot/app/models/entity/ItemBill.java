@@ -12,7 +12,7 @@ public class ItemBill implements Serializable {
     private Long id;
     private Integer amount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Product product;
 
@@ -36,4 +36,12 @@ public class ItemBill implements Serializable {
         return amount.doubleValue() * product.getPrice();
     }
     private static final long serialVersionUID = 1L;
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 }

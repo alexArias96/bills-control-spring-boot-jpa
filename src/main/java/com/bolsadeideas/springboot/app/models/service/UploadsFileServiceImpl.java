@@ -31,13 +31,13 @@ public class UploadsFileServiceImpl implements IUploadsFileService {
 
         log.info("pathFoto: " + pathPhoto);
 
-        Resource recurso = new UrlResource(pathPhoto.toUri());
+        Resource resource = new UrlResource(pathPhoto.toUri());
 
-        if (!recurso.exists() || !recurso.isReadable()) {
-            throw new RuntimeException("Error: No se puede mostrar la imagen: " + pathPhoto.toString());
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new RuntimeException("Error: Can't display the image: " + pathPhoto.toString());
         }
 
-        return recurso;
+        return resource;
     }
 
     @Override

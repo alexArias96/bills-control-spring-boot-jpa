@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <script type="text/javascript" th:fragment="javascript">
+        $(document).ready(function(){
+            $('#product_search').autocomplete({
+                source: function (request, response){
+                    $.ajax({
+                        url: "/bill/products-uploads/" + request.term,
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data){
+                            response($.map(data, function (item){
+                                return {
+                                    value: item.id,
+                                    label: item.name,
+                                    price: item.price,
+                                }
+                            }));
+                        },
+                    });
+                },
+                minLength:1,
+                select : function(event, ui){
+                    //$("#product_search").val(ui.item.label);
+
+                    if(itemsHelper.hasProduct(ui.item.value)){
+                        itemsHelper.quantityIncrease(ui.item.value, ui.item.price)
+                        return false;
+                    }
+
+
+                    var line = $("#itemsBillTemplate").html();
+
+                    line = line.replace(/{ID}/g, ui.item.value)
+                    line = line.replace(/{NAME}/g, ui.item.label)
+                    line = line.replace(/{PRICE}/g, ui.item.price)
+
+                    $("#uploadsItemProducts tbody").append(line)
+                    itemsHelper.calculateAmount(ui.item.value, ui.item.label, 1)
+
+                    return false;
+                }
+            });
+
+            //Delete template
+            $("form").submit(function () {
+                $("#itemsBillTemplate").remove();
+            });
+        });
+
+        var itemsHelper = {
+            calculateAmount: function (id, price, amount){
+                $("#total_amount_" + id).html(parseFloat(price) * parseInt(amount));
+                this.calculateGrandTotal();
+            },
+            hasProduct: function (id){
+                var result = false;
+                $('input[name="item_id[]"]').each(function (){
+                    if(parseInt(id) === parseInt($(this).val())){
+                        result = true;
+                    }
+                });
+                return result;
+            },
+            quantityIncrease: function (id, price){
+                var amount = $("#amount_" + id).val() ? parseInt($("#amount_" + id).val()) : 0;
+
+                $("#amount_" + id).val(++amount);
+
+                this.calculateAmount(id, price, amount);
+            },
+            deleteInvoiceLine: function (id){
+                $("#row_"+id).remove();
+                this.calculateGrandTotal();
+            },
+            calculateGrandTotal: function (){
+                var total = 0;
+                $('span[id^="total_amount_"]').each(function (){
+                    total += parseFloat($(this).html())
+                });
+
+                $('#grand_total').html(total);
+            }
+        }
+    </script>
+</body>
+</html>

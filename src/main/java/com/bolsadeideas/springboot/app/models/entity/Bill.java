@@ -1,6 +1,7 @@
 package com.bolsadeideas.springboot.app.models.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +13,7 @@ public class Bill implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotEmpty
     private String description;
     private String observation;
     @Temporal(TemporalType.DATE)
@@ -19,7 +21,7 @@ public class Bill implements Serializable {
     private Date createAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Client client;
+    private Customer customer;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "bill_id")
@@ -66,12 +68,12 @@ public class Bill implements Serializable {
         this.createAt = createAt;
     }
 
-    public Client getCliente() {
-        return client;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCliente(Client client) {
-        this.client = client;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public List<ItemBill> getItems() {

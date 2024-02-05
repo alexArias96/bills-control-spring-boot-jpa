@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "client")
-public class Client implements Serializable {
+@Table(name = "customers")
+public class Customer implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class Client implements Serializable {
 	private String name;
 	
 	@NotEmpty
-	private String lastName;
+	private String surname;
 	
 	@NotEmpty
 	@Email
@@ -35,10 +35,10 @@ public class Client implements Serializable {
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date createAt;
 
-	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Bill> bills;
 
-	public Client() {
+	public Customer() {
 		bills = new ArrayList<Bill>();
 	}
 
@@ -60,12 +60,12 @@ public class Client implements Serializable {
 		this.name = name;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getSurname() {
+		return surname;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setSurname(String surname) {
+		this.surname = surname;
 	}
 
 	public String getEmail() {
@@ -80,16 +80,16 @@ public class Client implements Serializable {
 		return createAt;
 	}
 
+	public void setCreateAt(Date createAt) {
+		this.createAt = createAt;
+	}
+
 	public String getPhoto() {
 		return photo;
 	}
 
 	public void setPhoto(String photo) {
 		this.photo = photo;
-	}
-
-	public void setCreateAt(Date createAt) {
-		this.createAt = createAt;
 	}
 
 	public static long getSerialversionuid() {
