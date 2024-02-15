@@ -30,6 +30,27 @@ public class BillController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @GetMapping("/viewDetailsBill/{id}")
+    public String viewDetailsBill(@PathVariable(value = "id") Long id,
+                            Model model,
+                            RedirectAttributes flash){
+
+        //The first: Obtain bill by id
+        Bill bill =  iCustomerService.findBillById(id);
+
+        //Validate if the bill es null?
+        if(bill == null){
+            flash.addFlashAttribute("error", "The bill does not exist in the database");
+            return "redirect:/list";
+        }
+
+        //Pasamos la factura a la vista mediante el objeto Model
+        model.addAttribute("bill", bill);
+        model.addAttribute("title", "Bill: ".concat(bill.getDescription()));
+
+        return "bill/viewDetailsBill";
+    }
+
     @GetMapping("/form/{customerId}")
     public String create(@PathVariable(value = "customerId") Long customerId,
                          Map<String, Object> model,
@@ -96,5 +117,18 @@ public class BillController {
         flash.addFlashAttribute("success", "create bill success!");
 
         return "redirect:/viewBills/" + bill.getCustomer().getId(); //This is due to the relationship that the invoice has with the entity customer
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteBill(@PathVariable(value = "id") Long id,
+                             RedirectAttributes flash){
+        Bill bill = iCustomerService.findBillById(id);
+        if (bill != null){
+            iCustomerService.deleteBill(id);
+            flash.addFlashAttribute("success", "Bill successfully deleted");
+            return "redirect:/viewBills/" + bill.getCustomer().getId();
+        }
+        flash.addFlashAttribute("error", "The bill does´t exist in database");
+        return "redirect:/list";
     }
 }

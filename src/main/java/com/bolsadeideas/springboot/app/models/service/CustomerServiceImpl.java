@@ -66,4 +66,16 @@ public class CustomerServiceImpl implements ICustomerService {
     public Product findProductById(Long id) {
         return productDAO.findById(id).orElse(null);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Bill findBillById(Long id) {
+        return billDao.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBill(Long id) {
+        billDao.deleteById(id);
+    }
 }
