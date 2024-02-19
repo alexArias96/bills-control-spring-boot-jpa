@@ -12,7 +12,7 @@ public class ItemBill implements Serializable {
     private Long id;
     private Integer amount;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 

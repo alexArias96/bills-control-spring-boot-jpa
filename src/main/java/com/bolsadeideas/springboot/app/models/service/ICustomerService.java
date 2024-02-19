@@ -13,6 +13,8 @@ public interface ICustomerService {
 
     public Customer findOne(Long id);
 
+    public Customer fetchByIdWithBills(Long id);
+
     public void delete(Long id);
 
     public List<Product> findByName(String term);
@@ -23,4 +25,6 @@ public interface ICustomerService {
 
     public Bill findBillById(Long id);
     public void deleteBill(Long id);
+
+    public Bill fetchBillByIdWithCustomerWithItemBillWithProduct(Long id);
 }

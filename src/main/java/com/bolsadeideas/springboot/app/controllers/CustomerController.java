@@ -31,7 +31,7 @@ public class CustomerController {
 
 
     @GetMapping(value = "/uploads/{filename:.+}")
-    public ResponseEntity<Resource> verFoto(@PathVariable String filename) throws MalformedURLException {
+    public ResponseEntity<Resource> viewPhoto(@PathVariable String filename) throws MalformedURLException {
 
         Resource resource = uploadsFileService.load(filename);
 
@@ -41,9 +41,9 @@ public class CustomerController {
     }
 
     @GetMapping("/viewBills/{id}")
-    public String viewBills(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
+    public String view(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
 
-        Customer customer = iCustomerService.findOne(id);
+        Customer customer = iCustomerService.fetchByIdWithBills(id); //iCustomerService.findOne(id);
         if (customer == null) {
             flash.addFlashAttribute("error", "This customer doesn´t exists in database");
             return "redirect:/list";
@@ -85,12 +85,12 @@ public class CustomerController {
             return "redirect:/list";
         }
         model.put("customer", customer);
-        model.put("title", "Edit customer");
+        model.put("title", "Edit Customer");
         return "form";
     }
 
     @RequestMapping(value = "/form", method = RequestMethod.POST)
-    public String saveCustomer(@Valid Customer customer, BindingResult result, Model model, @RequestParam("file") MultipartFile photo, RedirectAttributes flash, SessionStatus status) throws IOException {
+    public String save(@Valid Customer customer, BindingResult result, Model model, @RequestParam("file") MultipartFile photo, RedirectAttributes flash, SessionStatus status) throws IOException {
         if (result.hasErrors()) {
             model.addAttribute("title", "Customer Form");
             return "form";

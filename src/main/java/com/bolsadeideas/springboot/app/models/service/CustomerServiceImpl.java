@@ -27,7 +27,7 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     @Transactional(readOnly = true)
     public List<Customer> findAll() {
-        return customerDao.findAll();
+        return (List<Customer>) customerDao.findAll();
     }
 
     @Override
@@ -39,13 +39,19 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     @Transactional(readOnly = true)
     public Customer findOne(Long id) {
-        return customerDao.findOne(id);
+        return customerDao.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Customer fetchByIdWithBills(Long id) {
+        return customerDao.fetchByIdWithBills(id);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        customerDao.delete(id);
+        customerDao.deleteById(id);
     }
 
     @Override
@@ -77,5 +83,11 @@ public class CustomerServiceImpl implements ICustomerService {
     @Transactional
     public void deleteBill(Long id) {
         billDao.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Bill fetchBillByIdWithCustomerWithItemBillWithProduct(Long id) {
+        return billDao.fetchByIdWithCustomerWithItemBillWithProduct(id);
     }
 }

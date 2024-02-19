@@ -31,12 +31,15 @@ public class BillController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @GetMapping("/viewDetailsBill/{id}")
-    public String viewDetailsBill(@PathVariable(value = "id") Long id,
+    public String viewDetails(@PathVariable(value = "id") Long id,
                             Model model,
                             RedirectAttributes flash){
 
         //The first: Obtain bill by id
-        Bill bill =  iCustomerService.findBillById(id);
+        // iCustomerService.findBillById(id);
+
+        //Metodo optimizado para ejecutar una sola query
+        Bill bill =  iCustomerService.fetchBillByIdWithCustomerWithItemBillWithProduct(id);
 
         //Validate if the bill es null?
         if(bill == null){
@@ -77,7 +80,7 @@ public class BillController {
     }
 
     @PostMapping("/form")
-    public String saveBill(@Valid Bill bill,
+    public String save(@Valid Bill bill,
                            BindingResult result,
                            Model model,
                            @RequestParam(name = "item_id[]", required = false) Long[] itemId,
@@ -120,7 +123,7 @@ public class BillController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteBill(@PathVariable(value = "id") Long id,
+    public String delete(@PathVariable(value = "id") Long id,
                              RedirectAttributes flash){
         Bill bill = iCustomerService.findBillById(id);
         if (bill != null){
