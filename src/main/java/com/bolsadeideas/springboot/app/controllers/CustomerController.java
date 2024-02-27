@@ -1,16 +1,29 @@
 package com.bolsadeideas.springboot.app.controllers;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import com.bolsadeideas.springboot.app.models.entity.Customer;
 import com.bolsadeideas.springboot.app.models.service.IUploadsFileService;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.core.io.Resource;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import com.bolsadeideas.springboot.app.models.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,6 +36,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @SessionAttributes("customer")
 public class CustomerController {
 
+    protected final Log logger = LogFactory.getLog(this.getClass());
+
     @Autowired
     private ICustomerService iCustomerService;
 
@@ -30,16 +45,19 @@ public class CustomerController {
     private IUploadsFileService uploadsFileService;
 
 
+//    @Secured("ROLE_USER") authorization by annotations
     @GetMapping(value = "/uploads/{filename:.+}")
     public ResponseEntity<Resource> viewPhoto(@PathVariable String filename) throws MalformedURLException {
 
         Resource resource = uploadsFileService.load(filename);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; " +
+                        "filename\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
 
+    //@Secured("ROLE_USER", "ROLE_ADMIN")authorization by annotations
     @GetMapping("/viewBills/{id}")
     public String view(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
 
@@ -55,13 +73,44 @@ public class CustomerController {
         return "viewBills";
     }
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public String list(Model model) {
-        model.addAttribute("title", "customer List");
+    @RequestMapping(value = {"/list", "/"}, method = RequestMethod.GET)
+    public String list(Model model, Authentication authentication, HttpServletRequest request) {
+
+        if (authentication != null){
+            logger.info("The authenticated user is: ".concat(authentication.getName()));
+        }
+
+        if (hasRole("ROLE_ADMIN")){
+            logger.info("Hi ".concat(authentication.getName()).concat(" you have access"));
+        }else {
+            logger.info("Hi ".concat(authentication.getName()).concat(" you don´t have access"));
+        }
+
+        //Second form checkout authorities ==============================================================================================
+
+        SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request, "ROLE_");
+
+        if (securityContext.isUserInRole("ADMIN")){
+            logger.info("Second form using 'SecurityContextHolderAwareRequestWrapper': Hi ".concat(authentication.getName()).concat(" you have access"));
+        }else {
+            logger.info("Second form using 'SecurityContextHolderAwareRequestWrapper': Hi ".concat(authentication.getName()).concat(" you don´t have access"));
+        }
+
+
+        //Third form checkout authorities ==============================================================================================
+        if (request.isUserInRole("ADMIN")){
+            logger.info("Second form using 'HttpServletRequest': Hi ".concat(authentication.getName()).concat(" you have access"));
+        }else {
+            logger.info("Second form using 'HttpServletRequest': Hi ".concat(authentication.getName()).concat(" you don´t have access"));
+        }
+
+
+        model.addAttribute("title", "Customer List");
         model.addAttribute("customers", iCustomerService.findAll());
         return "list";
     }
 
+//    @Secured("ROLE_ADMIN") authorization by annotations
     @RequestMapping(value = "/form")
     public String create(Map<String, Object> model) {
 
@@ -71,6 +120,7 @@ public class CustomerController {
         return "form";
     }
 
+//    @Secured("ROLE_ADMIN") authorization by annotations
     @RequestMapping(value = "/form/{id}")
     public String edit(@PathVariable(value = "id") Long id, Map<String, Object> model) {
 
@@ -118,6 +168,7 @@ public class CustomerController {
         return "redirect:list";
     }
 
+//    @Secured("ROLE_ADMIN") authorization by annotations
     @RequestMapping(value = "/eliminate/{id}")
     public String eliminate(@PathVariable(value = "id") Long id, RedirectAttributes flash) {
 
@@ -133,5 +184,34 @@ public class CustomerController {
 
         }
         return "redirect:/list";
+    }
+
+    private boolean hasRole(String role){
+        //Video 485 obteniendo roles programaticamente
+
+        SecurityContext context = SecurityContextHolder.getContext();
+
+        if (context == null){
+            return false;
+        }
+
+        Authentication auth = context.getAuthentication();
+
+        if (auth == null){
+            return false;
+        }
+
+        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+
+//        for (GrantedAuthority authority: authorities) {
+//            if (role.equals(authority.getAuthority())){
+//                logger.info("Hi User ".concat(auth.getName()).concat(" your role is: ".concat(authority.getAuthority())));
+//                return true;
+//            }
+//        }
+//        return false;
+
+        //El metodo 'contains(GrantedAuthority)' retorna un bool si contiene o no el elemento de la coleccion
+        return authorities.contains(new SimpleGrantedAuthority(role));
     }
 }

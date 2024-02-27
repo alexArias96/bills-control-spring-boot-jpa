@@ -1,59 +1,39 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8" />
-<title th:text="${title}">Insert title here</title>
-<link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/layout :: head">
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<a class="navbar-brand" href="#">Spring Boot</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse"
-			data-target="#navbarNav" aria-controls="navbarNav"
-			aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarNav">
-			<ul class="navbar-nav">
-				<li class="nav-item active"><a class="nav-link" href="#">Home
-						<span class="sr-only">(current)</span>
-				</a></li>
-				<li class="nav-item"><a class="nav-link" th:href="@{/list}">Customers</a>
-				</li>
-			</ul>
-		</div>
-	</nav>
+<header th:replace="layout/layout :: header"></header>
 
 	<div class="container">
 		<h1
 			class="text-secondary border border-success border-top-0 border-left-0 border-right-0"
 			th:text="${title}"></h1>
-		<p><a th:href="@{/form}" class="btn btn-success btn-xs">Create Customers</a></p>
+		<p><a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/form}" class="btn btn-success btn-xs">Create Customers</a></p>
 		<table class="table table-striped">
 			<thead class="bg-dark" style="color: white">
 				<tr>
-					<th>id</th>
+					<th sec:authorize="hasRole('ROLE_USER')">id</th>
 					<th>Name</th>
 					<th>Last Name</th>
 					<th>Email</th>
 					<th>Birthdate</th>
-					<th>Create Invoice</th>
-					<th>Edit</th>
-					<th>Delete</th>
+					<th sec:authorize="hasRole('ROLE_ADMIN')">Create Invoice</th>
+					<th sec:authorize="hasRole('ROLE_ADMIN')">Edit</th>
+					<th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr th:each="customer: ${customers}">
-					<td><a class="btn btn-primary btn-xs" th:href="@{/viewBills/} + ${customer.id}" th:text="${customer.id}"></a></td>
+					<td><a sec:authorize="hasRole('ROLE_USER')" class="btn btn-primary btn-xs" th:href="@{/viewBills/} + ${customer.id}" th:text="${customer.id}"></a></td>
 					<td th:text="${customer.name}"></td>
 					<td th:text="${customer.surname}"></td>
 					<td th:text="${customer.email}"></td>
 					<td th:text="${customer.createAt}"></td>
-					<td><a class="btn btn-primary btn-xs" th:href="@{'/bill/form/' + ${customer.id}}" th:text="'Create Bill'"></a></td>
-					<td><a class="btn btn-primary btn-xs" th:href="@{/form/} + ${customer.id}" th:text="'Edit'"></a></td>
-					<td><a class="btn btn-danger btn-xs" th:href="@{/eliminate/} + ${customer.id}" th:text="'Delete'" onclick="return confirm('Are you sure you want to delete this customer?');"></a></td>
+					<td sec:authorize="hasRole('ROLE_ADMIN')"><a class="btn btn-primary btn-xs" th:href="@{'/bill/form/' + ${customer.id}}" th:text="'Create Bill'"></a></td>
+					<td sec:authorize="hasRole('ROLE_ADMIN')"><a class="btn btn-primary btn-xs" th:href="@{/form/} + ${customer.id}" th:text="'Edit'"></a></td>
+					<td sec:authorize="hasRole('ROLE_ADMIN')"><a class="btn btn-danger btn-xs" th:href="@{/eliminate/} + ${customer.id}" th:text="'Delete'" onclick="return confirm('Are you sure you want to delete this customer?');"></a></td>
 				</tr>
 			</tbody>
 
@@ -64,5 +44,6 @@
 		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 	<script
 		src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<footer th:replace="layout/layout :: footer"></footer>
 </body>
 </html>
