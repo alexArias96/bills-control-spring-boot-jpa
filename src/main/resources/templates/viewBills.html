@@ -30,8 +30,8 @@
                 <li class="list-group-item" th:text="${customer.surname}"></li>
                 <li class="list-group-item" th:text="${customer.email}"></li>
                 <li class="list-group-item" th:text="${customer.createAt}"></li>
+                <div th:if="${#lists.isEmpty(customer.bills)}" class="alert alert-info my-4" th:text="'There aren´t invoices assigned to the customer ' + ${customer.name} + ' ' + ${customer.surname}"></div>
             </ul>
-            <div th:if="${#lists.isEmpty(customer.bills)}" class="alert alert-info my-4" th:text="'There aren´t invoices assigned to the customer ' + ${customer.name} + ' ' + ${customer.surname}"></div>
             <table class="table table-bordered table-striped my-4" th:if="${not #lists.isEmpty(customer.bills)}">
                 <thead>
                     <tr>

@@ -1,20 +1,16 @@
 package com.bolsadeideas.springboot.app.controllers;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 import com.bolsadeideas.springboot.app.models.entity.Customer;
+import com.bolsadeideas.springboot.app.models.service.ICustomerService;
 import com.bolsadeideas.springboot.app.models.service.IUploadsFileService;
+import com.bolsadeideas.springboot.app.util.paginator.PageRender;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.springframework.core.io.Resource;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import com.bolsadeideas.springboot.app.models.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,7 +18,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +26,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.Map;
 
 @Controller
 @SessionAttributes("customer")
@@ -73,17 +75,25 @@ public class CustomerController {
         return "viewBills";
     }
 
-    @RequestMapping(value = {"/list", "/"}, method = RequestMethod.GET)
-    public String list(Model model, Authentication authentication, HttpServletRequest request) {
+    @RequestMapping(value = {"/","/list" }, method = RequestMethod.GET)
+    public String list(@RequestParam(name = "page", defaultValue = "0") int page, Model model,  HttpServletRequest request) {
 
-        if (authentication != null){
-            logger.info("The authenticated user is: ".concat(authentication.getName()));
+//        if (authentication != null){
+//            logger.info("The authenticated user is: ".concat(authentication.getName()));
+//        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if(auth != null) {
+            logger.info("First form using: SecurityContextHolder.getContext().getAuthentication(): Usuario autenticado: ".concat(auth.getName()));
         }
 
         if (hasRole("ROLE_ADMIN")){
-            logger.info("Hi ".concat(authentication.getName()).concat(" you have access"));
+            assert auth != null;
+            logger.info("Hi ".concat(auth.getName()).concat(" you have access"));
         }else {
-            logger.info("Hi ".concat(authentication.getName()).concat(" you don´t have access"));
+            assert auth != null;
+            logger.info("Hi ".concat(auth.getName()).concat(" you don´t have access"));
         }
 
         //Second form checkout authorities ==============================================================================================
@@ -91,22 +101,34 @@ public class CustomerController {
         SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request, "ROLE_");
 
         if (securityContext.isUserInRole("ADMIN")){
-            logger.info("Second form using 'SecurityContextHolderAwareRequestWrapper': Hi ".concat(authentication.getName()).concat(" you have access"));
+            logger.info("Second form using 'SecurityContextHolderAwareRequestWrapper': Hi ".concat(auth.getName()).concat(" you have access"));
         }else {
-            logger.info("Second form using 'SecurityContextHolderAwareRequestWrapper': Hi ".concat(authentication.getName()).concat(" you don´t have access"));
+            logger.info("Second form using 'SecurityContextHolderAwareRequestWrapper': Hi ".concat(auth.getName()).concat(" you don´t have access"));
         }
 
 
         //Third form checkout authorities ==============================================================================================
         if (request.isUserInRole("ADMIN")){
-            logger.info("Second form using 'HttpServletRequest': Hi ".concat(authentication.getName()).concat(" you have access"));
+            logger.info("Second form using 'HttpServletRequest': Hi ".concat(auth.getName()).concat(" you have access"));
         }else {
-            logger.info("Second form using 'HttpServletRequest': Hi ".concat(authentication.getName()).concat(" you don´t have access"));
+            logger.info("Second form using 'HttpServletRequest': Hi ".concat(auth.getName()).concat(" you don´t have access"));
         }
 
 
         model.addAttribute("title", "Customer List");
         model.addAttribute("customers", iCustomerService.findAll());
+
+
+        Pageable pageRequest = PageRequest.of(page, 4);
+
+        Page<Customer> customers = iCustomerService.findAll(pageRequest);
+
+        PageRender<Customer> customerPageRender = new PageRender<>("/list", customers);
+
+        model.addAttribute("title", "Customer List");
+        model.addAttribute("customers", customers);
+        model.addAttribute("page", customerPageRender);
+
         return "list";
     }
 
