@@ -12,7 +12,8 @@
         <div class="card-body">
             <h4 class="card-title">
                 <a th:href="@{'/viewBills/' + ${bill.customer.id}}" class="btn btn-light btn-xs">&laquo; Return</a>
-                <a class="btn btn-danger btn-xs float-right" th:href="@{'/bill/viewDetailsBill/' + ${bill.id}(format=pdf)}">PDF</a>
+                <a class="btn btn-danger btn-xs float-right mx-2" th:href="@{'/bill/viewDetailsBill/' + ${bill.id}(format=pdf)}">PDF</a>
+                <a class="btn btn-success btn-xs float-right" th:href="@{'/bill/viewDetailsBill/' + ${bill.id}(format=xlsx)}">EXCEL</a>
             </h4>
             <ul class="list-group my-2">
                 <li class="list-group-item list-group-item-primary" th:text="'Customer data'"></li>
