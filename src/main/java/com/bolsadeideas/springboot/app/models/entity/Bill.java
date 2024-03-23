@@ -2,6 +2,7 @@ package com.bolsadeideas.springboot.app.models.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,6 +69,7 @@ public class Bill implements Serializable {
         this.createAt = createAt;
     }
 
+    @XmlTransient //Omite este atributo en la serialización, no lo incluye en el xml
     public Customer getCustomer() {
         return customer;
     }
@@ -93,8 +95,8 @@ public class Bill implements Serializable {
         int size = items.size();
         
         //Atravez de un for vamos a recorrer los elementos y calculamos el total
-        for (int i = 0; i < size; i++) {
-            total += items.get(i).calculateAmount();
+        for (ItemBill item : items) {
+            total += item.calculateAmount();
         }
         return total;
     }
