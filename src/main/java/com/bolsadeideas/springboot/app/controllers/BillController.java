@@ -8,7 +8,6 @@ import com.bolsadeideas.springboot.app.models.service.ICustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -53,7 +52,7 @@ public class BillController {
         model.addAttribute("bill", bill);
         model.addAttribute("title", "Bill: ".concat(bill.getDescription()));
 
-        return "bill/viewDetailsBill";
+        return "bill/viewDetailsBill";  
     }
 
     @GetMapping("/form/{customerId}")
