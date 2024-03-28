@@ -12,6 +12,7 @@
 			th:text="${title}"></h1>
 		<p><a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/form}" class="btn btn-success btn-xs">Create Customers</a></p>
 		<a class="btn btn-success btn-outline-success float-right" th:href="@{'/list'(format=xml)}">XML</a>
+		<a class="btn btn-success btn-outline-warning float-right" th:href="@{'/list'(format=json)}">JSON</a>
 		<table class="table table-striped">
 			<thead class="bg-dark" style="color: white">
 				<tr>

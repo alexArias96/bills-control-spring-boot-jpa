@@ -1,5 +1,7 @@
 package com.bolsadeideas.springboot.app.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -12,7 +14,9 @@ public class ItemBill implements Serializable {
     private Long id;
     private Integer amount;
 
+    //@ManyToOne(fetch = FetchType.EAGER) //Trae los productos inmediatamente, junto con los items
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "product_id")
     private Product product;
 
