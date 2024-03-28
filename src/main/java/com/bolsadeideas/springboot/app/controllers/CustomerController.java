@@ -75,6 +75,12 @@ public class CustomerController {
         return "viewBills";
     }
 
+//    @GetMapping(value = "/list-rest")
+//    public @ResponseBody List<Customer> listRest() {
+//        return iCustomerService.findAll();
+//    }
+
+
     @RequestMapping(value = {"/","/list" }, method = RequestMethod.GET)
     public String list(@RequestParam(name = "page", defaultValue = "0") int page, Model model,  HttpServletRequest request) {
 
